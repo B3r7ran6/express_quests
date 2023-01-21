@@ -1,30 +1,5 @@
 const database = require("./database");
-const movies = [
-  {
-    id: 1,
-    title: "Citizen Kane",
-    director: "Orson Wells",
-    year: "1941",
-    colors: false,
-    duration: 120,
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    director: "Francis Ford Coppola",
-    year: "1972",
-    colors: true,
-    duration: 180,
-  },
-  {
-    id: 3,
-    title: "Pulp Fiction",
-    director: "Quentin Tarantino",
-    year: "1994",
-    color: true,
-    duration: 180,
-  },
-];
+
 const getMoviesFunction = (req, res) => {
   const id = parsInt(req.params.id);
 
@@ -57,7 +32,28 @@ const getMovieByIdFunction = (req, res) => {
     });
 };
 
+const postMovieFunction = (req, res) => {
+  const { title, director, year, color, duration } = req.body;
+
+  database
+    .query(
+      "INSERT INTO movies(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+      [title, director, year, color, duration]
+    )
+    .then(([result]) => {
+      if (result.insertId) {
+        res.location("/api/movies/" + result.insertId).sendStatus(201);
+      } else {
+        res.status(404).send("Not Found");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error saving the movie");
+    });
+};
 module.exports = {
   getMovies: getMoviesFunction,
   getMovieById: getMovieByIdFunction,
+  postMovie: postMovieFunction,
 };
