@@ -1,10 +1,10 @@
 const database = require("./database");
 
 const getMoviesFunction = (req, res) => {
-  const id = parsInt(req.params.id);
+  const id = parseInt(req.params.id);
 
   database
-    .query(`select * from movies where id = ${id}`)
+    .query(`select * from movies`)
     .then(([movies]) => {
       res.status(200).json(movies);
     })
@@ -52,8 +52,32 @@ const postMovieFunction = (req, res) => {
       res.status(500).send("Error saving the movie");
     });
 };
+
+const replaceMovieFunction = (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, director, year, color, duration } = req.body;
+
+  database
+    .query(
+      "UPDATE movies set title = ?, director = ?, year = ?, color = ?, duration = ? where id = ?",
+      [title, director, year, color, duration, id]
+    )
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        res.status(404).send("Not Found");
+      } else {
+        es.sendStatus(204);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error editing the movie");
+    });
+};
+
 module.exports = {
   getMovies: getMoviesFunction,
   getMovieById: getMovieByIdFunction,
   postMovie: postMovieFunction,
+  replaceMovie: replaceMovieFunction,
 };
