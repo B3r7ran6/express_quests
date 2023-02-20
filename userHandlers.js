@@ -1,7 +1,8 @@
 const database = require("./database");
 
 const getUsersFunction = (req, res) => {
-  const initialSql = "select id, firstname, lastname, email, city, language from users";
+  const initialSql =
+    "select id, firstname, lastname, email, city, language from users";
   const where = [];
 
   if (req.query.language != null) {
@@ -21,12 +22,11 @@ const getUsersFunction = (req, res) => {
 
   database
     .query(
-      where.reduce(
-        (sql, { column, operator }, index) => {
-          return `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`
-        },
-        initialSql
-      ),
+      where.reduce((sql, { column, operator }, index) => {
+        return `${sql} ${
+          index === 0 ? "where" : "and"
+        } ${column} ${operator} ?`;
+      }, initialSql),
       where.map(({ value }) => value)
     )
     .then(([users]) => {
@@ -42,7 +42,10 @@ function getUsersByIdFunction(req, res) {
   const id = parseInt(req.params.id);
 
   database
-    .query("select * from users where id = ?", [id])
+    .query(
+      "select id, firstname, lastname, email, city, language from users where id = ?",
+      [id]
+    )
     .then(([users]) => {
       if (users[0] != null) {
         res.json(users[0]);
@@ -56,7 +59,8 @@ function getUsersByIdFunction(req, res) {
     });
 }
 const postUserFunction = (req, res) => {
-  const { firstname, lastname, email, city, language, hashedPassword } = req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } =
+    req.body;
 
   database
     .query(
@@ -78,12 +82,13 @@ const postUserFunction = (req, res) => {
 
 const replaceUserFunction = (req, res) => {
   const id = parseInt(req.params.id);
-  const { firstname, lastname, email, city, language,  hashedPassword } = req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } =
+    req.body;
 
   database
     .query(
       "UPDATE users set firstname = ?, lastname = ?, email = ?, city = ?, language = ?,  hashedPassword = ? where id = ?",
-      [firstname, lastname, email, city, language,  hashedPassword, id]
+      [firstname, lastname, email, city, language, hashedPassword, id]
     )
     .then(([result]) => {
       if (result.affectedRows === 0) {
