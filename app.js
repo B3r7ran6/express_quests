@@ -17,13 +17,13 @@ const userHandlers = require("./userHandlers");
 
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
-app.post("/api/movies", movieHandlers.postMovie);
-app.put("/api/movies/:id", movieHandlers.replaceMovie);
+app.post("/api/movies",movieHandlers.validateMovie, movieHandlers.postMovie);
+app.put("/api/movies/:id",movieHandlers.validateMovie, movieHandlers.replaceMovie);
 
 app.get("/api/users", userHandlers.getUsers);
 app.get("/api/users/:id", userHandlers.getUsersById);
-app.post("/api/users", userHandlers.postUser);
-app.put("/api/users/:id", userHandlers.replaceUser);
+app.post("/api/users",userHandlers.validateUser, userHandlers.postUser);
+app.put("/api/users/:id",userHandlers.validateUser, userHandlers.replaceUser);
 
 app.listen(port, (err) => {
   if (err) {
